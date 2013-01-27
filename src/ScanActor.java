@@ -80,19 +80,24 @@ public class ScanActor extends UntypedActor {
 	 * @return All lines as a {@link List} of {@link String}s.
 	 */
 	private List<String> readFile() {
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(new File(filepath));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 		List<String> lines = new ArrayList<String>();
 
-		while (scanner.hasNext())
-			lines.add(scanner.nextLine());
+		Scanner scanner = null;
+		try {
+			if (filepath.equals("-"))
+				scanner = new Scanner(System.in); // Note that Ctrl-Z is line end in Windows 7
+			else
+				scanner = new Scanner(new File(filepath));
+			
+			while (scanner.hasNext())
+				lines.add(scanner.nextLine());
 
-		scanner.close();
-
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			try { scanner.close(); } catch (RuntimeException e) { }
+		}
+		
 		return lines;
 	}
 
